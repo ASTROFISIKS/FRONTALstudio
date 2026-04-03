@@ -11,32 +11,59 @@ html,body{height:100%;overflow:hidden;font-family:"Nimbus Sans","Nimbus Sans L",
 ::selection{background:var(--blue);color:var(--white-pure)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:200px}
 
-/* ── Splat iframe achtergrond ── */
+/* ── Splat iframe: start onzichtbaar, fadet in via JS ── */
 #splat-bg{
   position:fixed;
   top:0;left:0;
   width:100%;
-  /* 85% hoogte = zelfde als de oude .blue-panel */
   height:85%;
   border:none;
   z-index:0;
   pointer-events:none;
   display:block;
+  opacity:0;
+  transition:opacity 2s ease;
+  filter: hue-rotate(210deg) saturate(2.5) brightness(0.9);
 }
 
-.desktop{width:100%;height:100%;display:flex;flex-direction:column;position:relative;z-index:1}
-
-/* blue-panel is nu transparant — splat schijnt erdoorheen */
-.blue-panel{
-  flex:0 0 85%;
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  padding:0 2rem 1rem;
-  background:transparent; /* ← was var(--blue) */
+/* ── Blauw dekscherm: zichtbaar bij laden, fadet weg als splat klaar is ── */
+#blue-cover{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:85%;
+  background:var(--blue);
+  z-index:50;
+  pointer-events:none;
+  opacity:1;
+  transition:opacity 2s ease;
 }
 
+/* ── Bedekt SuperSplat player controls (pauze, fullscreen enz) ── */
+#splat-controls-mask{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:85%;
+  z-index:2;
+  pointer-events:none;
+}
+
+/* ── Kleur tint overlay ── */
+#splat-tint{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:85%;
+  background:#3a4ff0;
+  opacity:0.22;
+  mix-blend-mode:color;
+  z-index:1;
+  pointer-events:none;
+}
+
+.desktop{width:100%;height:100%;display:flex;flex-direction:column;position:relative;z-index:10}
+.blue-panel{flex:0 0 85%;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 1rem;background:transparent}
 .hero-title{font-size:6.4rem;font-weight:700;letter-spacing:-0.02em;line-height:0.85;color:var(--white-pure)}
 .lang-switch{position:absolute;top:1.2rem;right:2rem;display:flex;gap:0.5rem;align-items:center;z-index:10}
 .lang-switch button{background:none;border:none;color:var(--white-pure);font-family:inherit;font-size:0.5rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;opacity:0.15;transition:opacity 0.3s;padding:0;font-weight:500}
@@ -52,12 +79,21 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .folder.selected .folder-label{background:var(--blue);color:var(--white-pure);opacity:1;padding:0.1rem 0.3rem;margin:-0.1rem -0.3rem}
 @keyframes folderOpen{0%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:0.7}100%{transform:scale(0.9);opacity:0}}
 .folder.opening{animation:folderOpen 0.3s ease forwards;pointer-events:none}
-@media(max-width:768px){.blue-panel{flex:0 0 60%;padding:0 1.5rem 0.8rem}#splat-bg{height:60%}.hero-title{font-size:clamp(2rem,10vw,6.4rem)}.tagline-bar{padding:0.6rem 1.5rem}.tagline-text{font-size:0.55rem}.folder-icon{width:44px;height:37px}.folder-label{font-size:0.5rem}}
-@media(max-width:480px){.blue-panel{flex:0 0 55%}#splat-bg{height:55%}.hero-title{font-size:2rem}}
+@media(max-width:768px){.blue-panel{flex:0 0 60%;padding:0 1.5rem 0.8rem}#splat-bg,#blue-cover,#splat-tint,#splat-controls-mask{height:60%}.hero-title{font-size:clamp(2rem,10vw,6.4rem)}.tagline-bar{padding:0.6rem 1.5rem}.tagline-text{font-size:0.55rem}.folder-icon{width:44px;height:37px}.folder-label{font-size:0.5rem}}
+@media(max-width:480px){.blue-panel{flex:0 0 55%}#splat-bg,#blue-cover,#splat-tint,#splat-controls-mask{height:55%}.hero-title{font-size:2rem}}
 </style></head><body>
 
-<!-- Gaussian Splat achtergrond — vervang "splat.html" door jouw bestandsnaam -->
+<!-- Blauw dekscherm (zichtbaar bij laden, fadet weg na splat reveal) -->
+<div id="blue-cover"></div>
+
+<!-- Gaussian Splat — vervang "splat.html" door jouw bestandsnaam -->
 <iframe id="splat-bg" src="splat.html" allowfullscreen></iframe>
+
+<!-- Bedekt player controls van SuperSplat (pauze, fullscreen, enz) -->
+<div id="splat-controls-mask"></div>
+
+<!-- Kleur tint overlay -->
+<div id="splat-tint"></div>
 
 <div class="desktop">
 <div class="blue-panel">
@@ -71,14 +107,41 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 <a class="folder folder--mood" href="#" data-page="mood" onclick="event.preventDefault();window.open('https://ornate-torte-4065ce.netlify.app/','_blank')" style="right:25%;top:10%"><div class="folder-icon"><svg viewBox="0 0 56 48" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 10.9 2.9 10 4 10H20L24 4H52C53.1 4 54 4.9 54 6V42C54 43.1 53.1 44 52 44H4C2.9 44 2 43.1 2 42V12Z" fill="#c8960a"/><path d="M2 16H54V42C54 43.1 53.1 44 52 44H4C2.9 44 2 43.1 2 42V16Z" fill="#f0c628"/><path d="M2 16H54V20H2V16Z" fill="#f5d44a" opacity="0.6"/></svg></div><span class="folder-label">MOOD_app.zip</span></a>
 <a class="folder folder--archief" href="#" data-page="archief" onclick="event.preventDefault();openFolder(this,'archief')" style="right:35%;top:31%"><div class="folder-icon"><svg viewBox="0 0 56 48" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 10.9 2.9 10 4 10H20L24 4H52C53.1 4 54 4.9 54 6V42C54 43.1 53.1 44 52 44H4C2.9 44 2 43.1 2 42V16Z" fill="#f0c628"/><path d="M2 16H54V20H2V16Z" fill="#f5d44a" opacity="0.6"/></svg></div><span class="folder-label">ARCHIEF</span></a>
 </div></div>
+
 <script>
+// ── Taal ──
 var T={en:{tagline:"INDEPENDENT MUSIC STUDIO BASED IN BRUSSELS"},nl:{tagline:"ONAFHANKELIJKE MUZIEKSTUDIO IN BRUSSEL"},fr:{tagline:"STUDIO MUSICAL INDEPENDANT A BRUXELLES"}};
 var lang="en";
 function detect(){var b=(navigator.language||"en").toLowerCase();if(b.indexOf("nl")===0)return"nl";if(b.indexOf("fr")===0)return"fr";return"en"}
 function setLang(l){lang=l;var t=T[l];document.documentElement.lang=l;var els=document.querySelectorAll("[data-i18n]");for(var i=0;i<els.length;i++){var k=els[i].getAttribute("data-i18n");if(t[k]!==undefined)els[i].textContent=t[k]}var btns=document.querySelectorAll(".lang-switch button");for(var j=0;j<btns.length;j++){if(btns[j].getAttribute("data-lang")===l)btns[j].classList.add("active");else btns[j].classList.remove("active")}}
 setLang(detect());
 document.getElementById("langSwitch").addEventListener("click",function(e){if(e.target.tagName==="BUTTON")setLang(e.target.getAttribute("data-lang"))});
-var sel=null;var fs=document.querySelectorAll(".folder");for(var i=0;i<fs.length;i++){fs[i].addEventListener("click",function(e){e.preventDefault();if(sel)sel.classList.remove("selected");this.classList.add("selected");sel=this})}
+
+// ── Mappen ──
+var sel=null;var fs=document.querySelectorAll(".folder");
+for(var i=0;i<fs.length;i++){fs[i].addEventListener("click",function(e){e.preventDefault();if(sel)sel.classList.remove("selected");this.classList.add("selected");sel=this})}
 document.getElementById("desktopArea").addEventListener("click",function(e){if(e.target.id==="desktopArea"){if(sel){sel.classList.remove("selected");sel=null}}});
 function openFolder(el,page){el.classList.add("opening");setTimeout(function(){window.location.href=page+".html"},300)}
-</script></body></html>
+
+// ── Splat fade-in ──
+var splatBg   = document.getElementById("splat-bg");
+var blueCover = document.getElementById("blue-cover");
+var revealed  = false;
+
+function revealSplat(){
+  if(revealed) return;
+  revealed = true;
+  splatBg.style.opacity   = "1";   // splat infaden
+  blueCover.style.opacity = "0";   // blauw wegfaden (gelijktijdig, beide 2s)
+  setTimeout(function(){ blueCover.style.display = "none"; }, 2500);
+}
+
+// Primair: wacht op iframe load + 5 seconden
+splatBg.addEventListener("load", function(){
+  setTimeout(revealSplat, 5000);
+});
+
+// Fallback: als iframe load niet triggert (cross-origin), onthul na 8s
+setTimeout(revealSplat, 8000);
+</script>
+</body></html>
