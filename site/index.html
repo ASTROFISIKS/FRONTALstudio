@@ -11,7 +11,7 @@ html,body{height:100%;overflow:hidden;font-family:"Nimbus Sans","Nimbus Sans L",
 ::selection{background:var(--blue);color:var(--white-pure)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:200px}
 
-/* ── Splat iframe: start onzichtbaar, fadet in via JS ── */
+/* ── Splat iframe ── */
 #splat-bg{
   position:fixed;
   top:0;left:0;
@@ -23,30 +23,19 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
   display:block;
   opacity:0;
   transition:opacity 2s ease;
-
 }
 
-/* ── Blauw dekscherm: zichtbaar bij laden, fadet weg als splat klaar is ── */
+/* ── Blauw dekscherm — z-index LAGER dan .desktop zodat titel altijd zichtbaar is ── */
 #blue-cover{
   position:fixed;
   top:0;left:0;
   width:100%;
   height:85%;
   background:var(--blue);
-  z-index:50;
+  z-index:5; /* lager dan .desktop (z-index:10) → titel blijft zichtbaar */
   pointer-events:none;
   opacity:1;
   transition:opacity 2s ease;
-}
-
-/* ── Bedekt SuperSplat player controls (pauze, fullscreen enz) ── */
-#splat-controls-mask{
-  position:fixed;
-  top:0;left:0;
-  width:100%;
-  height:85%;
-  z-index:2;
-  pointer-events:none;
 }
 
 /* ── Kleur tint overlay ── */
@@ -62,8 +51,17 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
   pointer-events:none;
 }
 
+/* ── Desktop UI — altijd bovenop ── */
 .desktop{width:100%;height:100%;display:flex;flex-direction:column;position:relative;z-index:10}
-.blue-panel{flex:0 0 85%;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 1rem;background:transparent}
+.blue-panel{
+  flex:0 0 85%;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:0 2rem 1rem;
+  background:transparent;
+}
 .hero-title{font-size:6.4rem;font-weight:700;letter-spacing:-0.02em;line-height:0.85;color:var(--white-pure)}
 .lang-switch{position:absolute;top:1.2rem;right:2rem;display:flex;gap:0.5rem;align-items:center;z-index:10}
 .lang-switch button{background:none;border:none;color:var(--white-pure);font-family:inherit;font-size:0.5rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;opacity:0.15;transition:opacity 0.3s;padding:0;font-weight:500}
@@ -79,18 +77,17 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .folder.selected .folder-label{background:var(--blue);color:var(--white-pure);opacity:1;padding:0.1rem 0.3rem;margin:-0.1rem -0.3rem}
 @keyframes folderOpen{0%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:0.7}100%{transform:scale(0.9);opacity:0}}
 .folder.opening{animation:folderOpen 0.3s ease forwards;pointer-events:none}
-@media(max-width:768px){.blue-panel{flex:0 0 60%;padding:0 1.5rem 0.8rem}#splat-bg,#blue-cover,#splat-tint,#splat-controls-mask{height:60%}.hero-title{font-size:clamp(2rem,10vw,6.4rem)}.tagline-bar{padding:0.6rem 1.5rem}.tagline-text{font-size:0.55rem}.folder-icon{width:44px;height:37px}.folder-label{font-size:0.5rem}}
-@media(max-width:480px){.blue-panel{flex:0 0 55%}#splat-bg,#blue-cover,#splat-tint,#splat-controls-mask{height:55%}.hero-title{font-size:2rem}}
+@media(max-width:768px){.blue-panel{flex:0 0 60%;padding:0 1.5rem 0.8rem}#splat-bg,#blue-cover,#splat-tint{height:60%}.hero-title{font-size:clamp(2rem,10vw,6.4rem)}.tagline-bar{padding:0.6rem 1.5rem}.tagline-text{font-size:0.55rem}.folder-icon{width:44px;height:37px}.folder-label{font-size:0.5rem}}
+@media(max-width:480px){.blue-panel{flex:0 0 55%}#splat-bg,#blue-cover,#splat-tint{height:55%}.hero-title{font-size:2rem}}
 </style></head><body>
 
-<!-- Blauw dekscherm (zichtbaar bij laden, fadet weg na splat reveal) -->
+<!-- Splat iframe — autoplay + no user-gesture vereist -->
+<iframe id="splat-bg" src="splat.html"
+  allow="autoplay; xr-spatial-tracking"
+  allowfullscreen></iframe>
+
+<!-- Blauw dekscherm (fadet weg na reveal, zit ACHTER de titel) -->
 <div id="blue-cover"></div>
-
-<!-- Gaussian Splat — vervang "splat.html" door jouw bestandsnaam -->
-<iframe id="splat-bg" src="splat.html" allowfullscreen></iframe>
-
-<!-- Bedekt player controls van SuperSplat (pauze, fullscreen, enz) -->
-<div id="splat-controls-mask"></div>
 
 <!-- Kleur tint overlay -->
 <div id="splat-tint"></div>
@@ -131,17 +128,17 @@ var revealed  = false;
 function revealSplat(){
   if(revealed) return;
   revealed = true;
-  splatBg.style.opacity   = "1";   // splat infaden
-  blueCover.style.opacity = "0";   // blauw wegfaden (gelijktijdig, beide 2s)
+  splatBg.style.opacity   = "1";  // splat infaden (2s)
+  blueCover.style.opacity = "0";  // blauw wegfaden (2s)
   setTimeout(function(){ blueCover.style.display = "none"; }, 2500);
 }
 
-// Primair: wacht op iframe load + 5 seconden
+// Wacht op iframe load, dan 5 seconden buffer
 splatBg.addEventListener("load", function(){
   setTimeout(revealSplat, 5000);
 });
 
-// Fallback: als iframe load niet triggert (cross-origin), onthul na 8s
+// Fallback na 8s als load event niet triggert
 setTimeout(revealSplat, 8000);
 </script>
 </body></html>
