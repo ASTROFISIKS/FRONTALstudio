@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>MOOD — FRONTALstudio</title>
+<style>
+:root{--blue:#3a4ff0;--black:#0a0a0a;--white:#f0f0f0;--white-pure:#fff}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;font-family:"Nimbus Sans","Nimbus Sans L","Helvetica Neue","Arial",sans-serif;background:var(--blue);color:var(--white);cursor:default}
+::selection{background:var(--black);color:var(--white-pure)}
+
+/* grain overlay */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:200px}
+
+.wrapper{display:flex;flex-direction:column;height:100%;width:100%}
+
+/* top bar */
+.top-bar{
+  flex-shrink:0;
+  background:var(--blue);
+  padding:1.2rem 2rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  z-index:10;
+}
+.top-text{
+  font-size:0.6rem;
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--white-pure);
+  opacity:0.7;
+  line-height:1.5;
+  max-width:680px;
+}
+.back-btn{
+  flex-shrink:0;
+  background:none;
+  border:1px solid rgba(255,255,255,0.2);
+  color:var(--white-pure);
+  font-family:inherit;
+  font-size:0.5rem;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:0.4rem 0.8rem;
+  cursor:pointer;
+  opacity:0.5;
+  transition:opacity 0.3s;
+  text-decoration:none;
+}
+.back-btn:hover{opacity:0.9}
+
+/* iframe area */
+.app-frame{
+  flex:1;
+  position:relative;
+  overflow:hidden;
+}
+.app-frame iframe{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+/* mobile */
+@media(max-width:768px){
+  .top-bar{padding:1rem 1.2rem}
+  .top-text{font-size:0.5rem;letter-spacing:0.1em}
+}
+@media(max-width:480px){
+  .top-bar{padding:0.8rem 1rem;flex-direction:column;align-items:flex-start;gap:0.6rem}
+  .top-text{font-size:0.45rem}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="top-bar">
+    <div class="top-text">Double click to connect. Drag and drop the black hole to resonate with a vibe. Enjoy the infinite music.</div>
+    <a class="back-btn" href="index.html">BACK</a>
+  </div>
+  <div class="app-frame">
+    <iframe src="https://ornate-torte-4065ce.netlify.app/"
+      allow="autoplay; microphone; camera; xr-spatial-tracking"
+      allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals"></iframe>
+  </div>
+</div>
+</body>
+</html>
