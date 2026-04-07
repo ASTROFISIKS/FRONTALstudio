@@ -76,7 +76,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 </style></head><body>
 
 <!-- Splat iframe — opacity:1 van bij de start zodat WebGL context actief blijft -->
-<iframe id="splat-bg" src="splat.html"
+<iframe id="splat-bg" src="splat.html?noui"
   allow="autoplay; xr-spatial-tracking"
   allowfullscreen></iframe>
 
@@ -115,9 +115,9 @@ document.getElementById("desktopArea").addEventListener("click",function(e){if(e
 function openFolder(el,page){el.classList.add("opening");setTimeout(function(){window.location.href=page+".html"},300)}
 
 // ── Splat reveal ──
-// Iframe is altijd opacity:1 zodat WebGL actief blijft.
-// De blauwe cover zit erbovenop en fadet weg na laden + 5s.
-var splatBg   = document.getElementById("splat-bg");
+// splat.html?noui verbergt alle player-UI (loading bar, knoppen).
+// window.firstFrame() in de iframe stuurt een postMessage zodra het
+// eerste frame gerenderd is — dan pas starten we de fade.
 var blueCover = document.getElementById("blue-cover");
 var splatTint = document.getElementById("splat-tint");
 var revealed  = false;
@@ -130,12 +130,12 @@ function revealSplat(){
   setTimeout(function(){ blueCover.style.display = "none"; }, 11000);
 }
 
-// Wacht op iframe load + 5 seconden
-splatBg.addEventListener("load", function(){
-  setTimeout(revealSplat, 8000);
+// Luister naar firstFrame vanuit de iframe
+window.addEventListener("message", function(e){
+  if(e.data === "firstFrame") revealSplat();
 });
 
-// Fallback na 14s
+// Fallback: als postMessage nooit aankomt (bv. Safari same-origin quirk)
 setTimeout(revealSplat, 14000);
 </script>
 </body></html>
