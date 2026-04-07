@@ -15,31 +15,14 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 
 .wrapper{display:flex;flex-direction:column;height:100%;width:100%}
 
-/* top bar */
-.top-bar{
-  flex-shrink:0;
-  background:var(--blue);
-  padding:1.2rem 2rem;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:1rem;
-  z-index:10;
-}
-.top-text{
-  font-size:0.6rem;
-  font-weight:700;
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-  color:var(--white-pure);
-  opacity:0.7;
-  line-height:1.5;
-  max-width:680px;
-}
+/* back button — top right */
 .back-btn{
-  flex-shrink:0;
+  position:fixed;
+  top:1rem;
+  right:1.5rem;
+  z-index:100;
   background:none;
-  border:1px solid rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.25);
   color:var(--white-pure);
   font-family:inherit;
   font-size:0.5rem;
@@ -54,11 +37,30 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 }
 .back-btn:hover{opacity:0.9}
 
-/* iframe area */
+/* instruction text bar */
+.top-bar{
+  flex-shrink:0;
+  background:var(--blue);
+  padding:1.8rem 2.5rem 1.2rem;
+  text-align:center;
+  z-index:10;
+}
+.top-text{
+  font-size:0.85rem;
+  font-weight:700;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--white-pure);
+  opacity:0.65;
+  line-height:1.6;
+}
+
+/* iframe area — centered with blue masking borders */
 .app-frame{
   flex:1;
   position:relative;
   overflow:hidden;
+  background:var(--blue);
 }
 .app-frame iframe{
   position:absolute;
@@ -68,28 +70,45 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
   border:none;
 }
 
+/* blue overlay borders to mask dark iframe edges */
+.mask-top,.mask-bottom,.mask-left,.mask-right{
+  position:absolute;
+  background:var(--blue);
+  z-index:2;
+  pointer-events:none;
+}
+.mask-top{top:0;left:0;right:0;height:28px}
+.mask-bottom{bottom:0;left:0;right:0;height:10px}
+.mask-left{top:0;bottom:0;left:0;width:10px}
+.mask-right{top:0;bottom:0;right:0;width:10px}
+
 /* mobile */
 @media(max-width:768px){
-  .top-bar{padding:1rem 1.2rem}
-  .top-text{font-size:0.5rem;letter-spacing:0.1em}
+  .top-bar{padding:1.2rem 1.2rem 0.8rem}
+  .top-text{font-size:0.65rem;letter-spacing:0.12em}
 }
 @media(max-width:480px){
-  .top-bar{padding:0.8rem 1rem;flex-direction:column;align-items:flex-start;gap:0.6rem}
-  .top-text{font-size:0.45rem}
+  .top-bar{padding:1rem 1rem 0.6rem}
+  .top-text{font-size:0.5rem;letter-spacing:0.08em}
 }
 </style>
 </head>
 <body>
+<a class="back-btn" href="index.html">BACK</a>
 <div class="wrapper">
   <div class="top-bar">
     <div class="top-text">Double click to connect. Drag and drop the black hole to resonate with a vibe. Enjoy the infinite music.</div>
-    <a class="back-btn" href="index.html">BACK</a>
   </div>
   <div class="app-frame">
     <iframe src="https://ornate-torte-4065ce.netlify.app/"
       allow="autoplay; microphone; camera; xr-spatial-tracking"
       allowfullscreen
       sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals"></iframe>
+    <!-- blue masks to cover dark iframe edges -->
+    <div class="mask-top"></div>
+    <div class="mask-bottom"></div>
+    <div class="mask-left"></div>
+    <div class="mask-right"></div>
   </div>
 </div>
 </body>
