@@ -16,7 +16,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;o
 
 
 /* ── Splat iframe ── */
-#splat-bg{
+#splat-bg,#splat-bg2{
   position:absolute;
   top:0;left:0;
   width:100%;
@@ -25,7 +25,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;o
   z-index:0;
   display:block;
 }
-#splat-tint{
+#splat-tint,.splat-tint-overlay{
   position:absolute;
   top:0;left:0;
   width:100%;
@@ -34,6 +34,18 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;o
   z-index:1;
   pointer-events:none;
   opacity:0.18;
+}
+.splat-label{
+  position:absolute;
+  bottom:1.5rem;left:2rem;
+  font-size:0.5rem;
+  font-weight:900;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--white-pure);
+  opacity:0.35;
+  z-index:2;
+  pointer-events:none;
 }
 
 /* HERO */
@@ -97,11 +109,21 @@ body.en .t-en-b{display:block}
 <div class="splat-container" style="position:relative;height:85vh;overflow:hidden">
 <iframe id="splat-bg" src="splat.html" allow="autoplay; xr-spatial-tracking" allowfullscreen></iframe>
 <div id="splat-tint"></div>
+<div class="splat-label">Studio 1</div>
 </div>
 
 <div class="gear">
 <div class="gear-items"><span>PMC 8-2</span> · <span>Neumann KH 120 II</span> · <span>STAM SA-87T</span> · <span>Lewitt LCT 1040</span> · <span>Neumann TLM 103</span> · <span>AKG C214</span> · <span>SPL Tube Vitalizer</span> · <span>Neve 8801</span> · <span>GSSL 4000 Compressor (mod)</span> · <span>Urei LA-10</span> · <span>Neve Portico II Masterbus Processor</span> · <span>TL Audio VP1 Valve Processor</span> · <span>Universal Audio Apollo X8</span> · <span>Apollo Twin</span> · <span>M-Audio Interface</span> · <span>Arturia Polybrute</span> · <span>Casio CZ3000</span> · <span>NI Maschine+</span> · <span>Roland TR-8S</span> · <span>Tama Drumkit</span></div>
+</div>
 
+<div class="splat-container" style="position:relative;height:85vh;overflow:hidden">
+<iframe id="splat-bg2" class="splat-iframe" src="splat-studio2.html" allow="autoplay; xr-spatial-tracking" allowfullscreen></iframe>
+<div id="splat-tint2" class="splat-tint-overlay"></div>
+<div class="splat-label">Studio 2</div>
+</div>
+
+<div class="gear">
+<div class="gear-items"><span>ATC SCM25</span> · <span>PMC 6-2 pair</span> · <span>NS10-M Studio pair</span> · <span>Neumann U87 vintage (modded early '70s)</span> · <span>EV 635A (vintage)</span> · <span>EV RE11 (vintage)</span> · <span>AKG D12E (vintage)</span> · <span>Revox D19 (vintage)</span> · <span>Beyerdynamic M160 (×2)</span> · <span>Chandler TG2 Preamplifier</span> · <span>Chandler RS124 Tube Compressor</span> · <span>Chandler LTD-2 Compressor</span> · <span>Cranesong HEDD Quantum Converter</span> · <span>AKG BX5 Spring Reverb</span> · <span>Thermionic Culture — The Swift Valve Equalizer</span> · <span>Thermionic Culture — The Snow Petrel Valve Preamplifier</span> · <span>UAD Apollo X8 Interface</span> · <span>Arturia V Collection 8</span> · <span>Arturia FX Collection</span> · <span>Melodyne Essential 4</span> · <span>Fender Vibrochamp 1972</span> · <span>Sequential Prophet-5 Rev 4</span> · <span>Moog Realistic Concertmate MG-1</span> · <span>Hohner Organa 30 (vintage)</span> · <span>Ace Tone FR6 (vintage)</span> · <span>Korg Mini Pops 120 (vintage)</span> · <span>Critter &amp; Guitari Organelle w/ custom patches</span> · <span>Sigma DM-15</span> · <span>Gianini Brazilian Nylon Guitar (vintage)</span> · <span>Fender Mustang 2003 (Japan)</span> · <span>Hofner Bass 1963 (vintage)</span> · <span>Epiphone 1956 Les Paul Goldtop</span> · <span>Some guitar FX pedals, crappy creative mics, etc.</span></div>
 </div>
 <div class="foot">Anspachlaan 77, 1000 Brussel</div>
 
@@ -110,21 +132,20 @@ body.en .t-en-b{display:block}
 
 
 <script>
-// Hide splat player controls
-const splatFrame = document.getElementById('splat-bg');
-if(splatFrame){
-  splatFrame.addEventListener('load', function(){
+// Hide splat player controls on both iframes
+function hideSplatControls(frame){
+  if(!frame) return;
+  frame.addEventListener('load', function(){
     try{
-      const sd = splatFrame.contentDocument || splatFrame.contentWindow.document;
-      const cw = sd.getElementById('controlsWrap');
-      if(cw) cw.style.display='none';
-      // Also hide any other UI elements
+      const sd = frame.contentDocument || frame.contentWindow.document;
       const style = sd.createElement('style');
       style.textContent = '#controlsWrap,#buttonsContainer,#timelineContainer,.controlButton{display:none!important}';
       sd.head.appendChild(style);
     }catch(e){console.log('Could not hide splat controls',e)}
   });
 }
+hideSplatControls(document.getElementById('splat-bg'));
+hideSplatControls(document.getElementById('splat-bg2'));
 </script>
 <script>
 function setLang(l){
