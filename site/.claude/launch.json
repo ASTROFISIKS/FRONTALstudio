@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "site",
-      "runtimeExecutable": "/usr/bin/ruby",
-      "runtimeArgs": ["serve.rb"],
+      "runtimeExecutable": "/usr/bin/python3",
+      "runtimeArgs": ["-c", "import http.server, os; os.chdir('/Users/paulorietjens/Documents/GitHub/FRONTALstudio/site'); http.server.test(HandlerClass=http.server.SimpleHTTPRequestHandler, port=3000, bind='127.0.0.1')"],
       "port": 3000
     }
   ]
