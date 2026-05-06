@@ -11,7 +11,12 @@ html,body{height:100%;overflow:hidden;font-family:"Nimbus Sans","Nimbus Sans L",
 ::selection{background:var(--blue);color:var(--white-pure)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:200px}
 .desktop{width:100%;height:100%;display:flex;flex-direction:column}
-.blue-panel{background:var(--blue);flex:0 0 85%;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 1rem}
+.blue-panel{background:var(--blue);flex:0 0 85%;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 1rem;overflow:hidden}
+#splat-home{position:absolute;inset:0;width:100%;height:100%;border:none;z-index:0;display:block;opacity:0;transition:opacity 1.2s ease}
+#splat-home.loaded{opacity:1}
+#splat-home-tint{position:absolute;inset:0;background:var(--blue);opacity:0.4;z-index:1;pointer-events:none;transition:opacity 1s ease}
+#splat-home.loaded~#splat-home-tint{opacity:0.25}
+.lang-switch,.hero-title{position:relative;z-index:2}
 .hero-title{font-size:6.4rem;font-weight:700;letter-spacing:-0.02em;line-height:0.85;color:var(--white-pure)}
 .lang-switch{position:absolute;top:1.2rem;right:2rem;display:flex;gap:0.5rem;align-items:center;z-index:10}
 .lang-switch button{background:none;border:none;color:var(--white-pure);font-family:inherit;font-size:0.5rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;opacity:0.15;transition:opacity 0.3s;padding:0;font-weight:500}
@@ -32,6 +37,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;o
 </style></head><body>
 <div class="desktop">
 <div class="blue-panel">
+<iframe id="splat-home" src="splat.html" allow="autoplay; xr-spatial-tracking" allowfullscreen></iframe>
+<div id="splat-home-tint"></div>
 <div class="lang-switch" id="langSwitch"><button data-lang="en">EN</button><span class="lang-sep">/</span><button data-lang="nl" class="active">NL</button><span class="lang-sep">/</span><button data-lang="fr">FR</button></div>
 <div class="hero-title">FRONTALstudio</div>
 </div>
@@ -52,4 +59,22 @@ document.getElementById("langSwitch").addEventListener("click",function(e){if(e.
 var sel=null;var fs=document.querySelectorAll(".folder");for(var i=0;i<fs.length;i++){fs[i].addEventListener("click",function(e){e.preventDefault();if(sel)sel.classList.remove("selected");this.classList.add("selected");sel=this})}
 document.getElementById("desktopArea").addEventListener("click",function(e){if(e.target.id==="desktopArea"){if(sel){sel.classList.remove("selected");sel=null}}});
 function openFolder(el,page){el.classList.add("opening");setTimeout(function(){window.location.href=page+".html"},300)}
+// Hide controls + fade in splat when ready
+var sf=document.getElementById('splat-home');
+if(sf){sf.addEventListener('load',function(){
+  try{
+    var sd=sf.contentDocument||sf.contentWindow.document;
+    var s=sd.createElement('style');
+    s.textContent='#controlsWrap,#buttonsContainer,#timelineContainer,.controlButton{display:none!important}';
+    sd.head.appendChild(s);
+    // Fade in once WebGL canvas has painted (wait for first frame)
+    var check=setInterval(function(){
+      try{
+        var c=sd.querySelector('canvas');
+        if(c&&c.width>0){sf.classList.add('loaded');clearInterval(check)}
+      }catch(e){sf.classList.add('loaded');clearInterval(check)}
+    },100);
+    setTimeout(function(){sf.classList.add('loaded');clearInterval(check)},3000);
+  }catch(e){sf.classList.add('loaded')}
+})}
 </script></body></html>
