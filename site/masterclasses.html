@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRONTALstudio — Masterclasses</title>
+    <style>
+        :root {
+            --blue: #3a4ff0;
+            --black: #0a0a0a;
+            --white: #f0f0f0;
+            --white-pure: #fff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: 'Nimbus Sans', 'Nimbus Sans L', 'Helvetica Neue', 'Arial', sans-serif;
+            background: var(--blue);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 200px;
+        }
+        
+        ::selection {
+            background: var(--black);
+            color: var(--white-pure);
+        }
+        
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(58, 79, 240, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        
+        .back {
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: -0.09em;
+            color: var(--black);
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .back:hover {
+            opacity: 0.6;
+        }
+        
+        .lbl {
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--black);
+        }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 3rem;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 560px;
+        }
+        
+        h1 {
+            font-size: 3.4rem;
+            font-weight: 900;
+            letter-spacing: -0.09em;
+            color: var(--white-pure);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--white-pure);
+            margin-bottom: 2rem;
+        }
+        
+        .description {
+            font-size: 0.75rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+        
+        .sessions {
+            margin-bottom: 2.5rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--white-pure);
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .session {
+            background: rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--black);
+            padding: 1.2rem;
+            margin-bottom: 0.8rem;
+            transition: background 0.3s;
+        }
+        
+        .session:hover {
+            background: rgba(0, 0, 0, 0.18);
+        }
+        
+        .session-day {
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 0.3rem;
+        }
+        
+        .session-date {
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--white-pure);
+            margin-bottom: 0.4rem;
+        }
+        
+        .session-time {
+            font-size: 0.7rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+        
+        .session-location {
+            font-size: 0.7rem;
+            color: var(--white);
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.55rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 0.4rem;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--black);
+            color: var(--black);
+            font-family: inherit;
+            font-size: 0.8rem;
+            padding: 0.8rem 1rem;
+            border-radius: 0;
+            transition: border-color 0.3s, background 0.3s;
+            outline: none;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            background: rgba(0, 0, 0, 0.18);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        select {
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        
+        select option {
+            background: var(--blue);
+            color: var(--black);
+        }
+        
+        .submit {
+            display: inline-block;
+            background: var(--black);
+            color: var(--white-pure);
+            border: none;
+            font-family: inherit;
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            padding: 1rem 2.5rem;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+        
+        .submit:hover {
+            opacity: 0.75;
+        }
+        
+        .submit:active {
+            transform: scale(0.98);
+        }
+        
+        .pricing {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--black);
+        }
+        
+        .pricing-label {
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 0.3rem;
+        }
+        
+        .pricing-value {
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--white-pure);
+        }
+        
+        .success {
+            display: none;
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .success h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            color: var(--white-pure);
+            margin-bottom: 0.5rem;
+        }
+        
+        .success p {
+            font-size: 0.75rem;
+            color: var(--black);
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .nav {
+                padding: 1rem 1.5rem;
+            }
+            .main {
+                padding: 5rem 1.5rem 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html" class="back">← FRONTALstudio</a>
+    <span class="lbl">MASTERCLASSES</span>
+</nav>
+
+<main class="main">
+    <div class="container">
+        <div id="formView">
+            <h1>Masterclasses</h1>
+            <p class="subtitle">BEATMAKING en MIXING</p>
+            <p class="description">Stap binnen in de wereld van Astrofisiks en ontdek hoe zijn beats ontstaan. Van sample chops en drumgrooves tot mixkeuzes die een track naar een hoger niveau tillen. Geen theorie, maar een namiddag vol concrete techniken, creatieve inzichten en studio-ervaing uit de praktijk.</p>
+
+            <div class="sessions">
+                <div class="section-title">Beatmaking</div>
+                
+                <div class="session">
+                    <div class="session-day">Woensdag</div>
+                    <div class="session-date">24 Juni 2026</div>
+                    <div class="session-time">13:00 – 18:00</div>
+                    <div class="session-location">FRONTAL Studio, Brussels</div>
+                </div>
+
+                <div class="session">
+                    <div class="session-day">Woensdag</div>
+                    <div class="session-date">1 Juli 2026</div>
+                    <div class="session-time">13:00 – 18:00</div>
+                    <div class="session-location">FRONTAL Studio, Brussels</div>
+                </div>
+
+                <div class="section-title">Mixing</div>
+                
+                <div class="session">
+                    <div class="session-day">Zaterdag</div>
+                    <div class="session-date">27 Juni 2026</div>
+                    <div class="session-time">13:00 – 18:00</div>
+                    <div class="session-location">FRONTAL Studio, Brussels</div>
+                </div>
+
+                <div class="session">
+                    <div class="session-day">Zaterdag</div>
+                    <div class="session-date">4 Juli 2026</div>
+                    <div class="session-time">13:00 – 18:00</div>
+                    <div class="session-location">FRONTAL Studio, Brussels</div>
+                </div>
+
+                <div class="session">
+                    <div class="session-day">Zaterdag</div>
+                    <div class="session-date">11 Juli 2026</div>
+                    <div class="session-time">13:00 – 18:00</div>
+                    <div class="session-location">FRONTAL Studio, Brussels</div>
+                </div>
+            </div>
+
+            <form id="masterclassForm" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY_HERE">
+                <input type="hidden" name="subject" value="Masterclass aanmelding - FRONTAL Studio">
+                <input type="hidden" name="from_name" value="FRONTALstudio Masterclasses">
+                <input type="checkbox" name="botcheck" style="display:none">
+
+                <div class="form-group">
+                    <label>Naam</label>
+                    <input type="text" name="name" required placeholder="Je naam">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required placeholder="je@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Telefoonnummer</label>
+                    <input type="tel" name="phone" placeholder="+32 xxx xxx xxx">
+                </div>
+
+                <div class="form-group">
+                    <label>Welke masterclass?</label>
+                    <select name="masterclass" required>
+                        <option value="" disabled selected>Kies een masterclass</option>
+                        <optgroup label="Beatmaking">
+                            <option value="24 Juni 2026 — Beatmaking">24 Juni 2026 • Beatmaking (13:00-18:00)</option>
+                            <option value="1 Juli 2026 — Beatmaking">1 Juli 2026 • Beatmaking (13:00-18:00)</option>
+                        </optgroup>
+                        <optgroup label="Mixing">
+                            <option value="27 Juni 2026 — Mixing">27 Juni 2026 • Mixing (13:00-18:00)</option>
+                            <option value="4 Juli 2026 — Mixing">4 Juli 2026 • Mixing (13:00-18:00)</option>
+                            <option value="11 Juli 2026 — Mixing">11 Juli 2026 • Mixing (13:00-18:00)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Opmerkingen (optioneel)</label>
+                    <textarea name="message" placeholder="Vertel iets over je achtergrond of wat je wilt leren..."></textarea>
+                </div>
+
+                <button type="submit" class="submit">Aanmelden</button>
+            </form>
+
+            <div class="pricing">
+                <div class="pricing-label">Prijs</div>
+                <div class="pricing-value">€ 200 per persoon (cash)</div>
+            </div>
+        </div>
+
+        <div class="success" id="successView">
+            <h2>Aanmelding ontvangen.</h2>
+            <p>We nemen zo snel mogelijk contact op voor verdere details.</p>
+        </div>
+    </div>
+</main>
+
+<script>
+document.getElementById("masterclassForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    var form = this;
+    var data = new FormData(form);
+    fetch(form.action, {method: "POST", body: data})
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.success) {
+                document.getElementById("formView").style.display = "none";
+                document.getElementById("successView").style.display = "block";
+            }
+        });
+});
+</script>
+
+</body>
+</html>
