@@ -355,7 +355,7 @@
             </div>
 
             <form id="masterclassForm" action="https://api.web3forms.com/submit" method="POST">
-                <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY_HERE">
+                <input type="hidden" name="access_key" value="daa76dc8-ff10-4465-8014-1fcecd9fa16d">
                 <input type="hidden" name="subject" value="Masterclass aanmelding - FRONTAL Studio">
                 <input type="hidden" name="from_name" value="FRONTALstudio Masterclasses">
                 <input type="checkbox" name="botcheck" style="display:none">
@@ -416,14 +416,30 @@
 document.getElementById("masterclassForm").addEventListener("submit", function(e) {
     e.preventDefault();
     var form = this;
+    var btn = form.querySelector("button[type='submit']");
+    var originalText = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = "Verzenden...";
+
     var data = new FormData(form);
-    fetch(form.action, {method: "POST", body: data})
+    fetch(form.action, { method: "POST", body: data })
         .then(function(r) { return r.json(); })
         .then(function(d) {
             if (d.success) {
                 document.getElementById("formView").style.display = "none";
                 document.getElementById("successView").style.display = "block";
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                alert("Er ging iets mis bij het verzenden. Probeer opnieuw of mail rechtstreeks naar frontalstudiobxl@gmail.com");
             }
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.textContent = originalText;
+            alert("Verbindingsfout. Probeer opnieuw of mail rechtstreeks naar frontalstudiobxl@gmail.com");
         });
 });
 </script>
